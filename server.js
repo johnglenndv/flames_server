@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const express = require("express");
-const mysql = require("mysql2");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const bcrypt = require("bcryptjs");
+import express from "express";
+import mysql from "mysql2";
+import bodyParser from "body-parser";
+import cors from "cors";
+import bcrypt from "bcryptjs";
 
 const app = express();
 app.use(cors());
