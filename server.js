@@ -29,11 +29,11 @@ db.connect(err => {
 
 // Register route
 app.post("/register", (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { username, password, node_id } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
-  const sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
-  db.query(sql, [name, email, hashedPassword, role], (err, result) => {
+  const sql = "INSERT INTO users ( username, password, node_id) VALUES ( ?, ?, ?)";
+  db.query(sql, [ username, hashedPassword, node_id], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).send("Error registering user");
@@ -45,9 +45,9 @@ app.post("/register", (req, res) => {
 
 // Login route
 app.post("/login", (req, res) => {
-  const { email, password } = req.body;
-  const sql = "SELECT * FROM users WHERE email = ?";
-  db.query(sql, [email], (err, results) => {
+  const { username, password } = req.body;
+  const sql = "SELECT * FROM users WHERE username = ?";
+  db.query(sql, [username], (err, results) => {
     if (err) return res.status(500).send("Server error");
     if (results.length === 0) return res.status(404).send("User not found");
 
@@ -56,9 +56,8 @@ app.post("/login", (req, res) => {
 
     if (isPasswordValid) {
       res.json({
-        name: user.name,
-        email: user.email,
-        role: user.role
+        username: user.username,
+        node_id: user.node_id
       });
     } else {
       res.status(401).send("Invalid password");
