@@ -65,6 +65,47 @@ app.post("/login", (req, res) => {
   });
 });
 
+// Get latest data for a specific node
+app.get("/api/node/:node_id/latest", (req, res) => {
+  const node_id = req.params.node_id;
+  const sql = `
+    SELECT * FROM node_data
+    WHERE node_id = ?
+    ORDER BY timestamp DESC
+    LIMIT 1
+  `;
+
+  db.query(sql, [node_id], (err, results) => {
+    if (err) {
+      console.error("DB error:", err);
+      res.status(500).send("Database error");
+    } else if (results.length === 0) {
+      res.status(404).send("No data found for this node");
+    } else {
+      res.json(results[0]);
+    }
+  });
+});
+
+// Get history of readings for a node
+app.get("/api/node/:node_id/history", (req, res) => {
+  const node_id = req.params.node_id;
+  const sql = `
+    SELECT * FROM node_data
+    WHERE node_id = ?
+    ORDER BY timestamp DESC
+    LIMIT 50
+  `;
+  db.query(sql, [node_id], (err, results) => {
+    if (err) {
+      res.status(500).send("Database error");
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+
 app.listen(5000, () => {
   console.log("🚀 Server running on http://localhost:5000");
 });
